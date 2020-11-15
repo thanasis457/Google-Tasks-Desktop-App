@@ -1,5 +1,5 @@
 import sys
-from quickstart import ret_lists,ret_tasks,func,delete
+from quickstart import ret_lists,ret_tasks,func,delete,complete
 from functools import partial
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QWidget,\
@@ -21,10 +21,15 @@ def update_tasks(all_tasks,list_id,service):
         all_tasks.addWidget(x,cnt+1,1)
         all_tasks.addWidget(y,cnt+1,2)
         x.clicked.connect(partial(delete_button,all_tasks,list_id,tasks[cnt][1],service))
+        y.clicked.connect(partial(complete_button,all_tasks,list_id,tasks[cnt][1],tasks[cnt][2],service))
+
+def complete_button(all_tasks,list_id,task_id,task,service):
+    complete(all_tasks,list_id,task_id,task,service)
+    update_tasks(all_tasks,list_id,service)
+
 
 def delete_button(all_tasks,list_id,task_id,service):
 
-    delete(all_tasks,list_id,task_id,service)
     update_tasks(all_tasks,list_id,service)
 
 def main():
@@ -46,8 +51,9 @@ def main():
     window.setGeometry(100,100,280,80)
     window.move(0,0)
     drop_list=QComboBox()
+    # drop_list.resize(50,50)
     all_tasks.addWidget(drop_list,0,0)
-
+    # print(lists)
     for i in lists:
         drop_list.addItem(i[0])
 
@@ -58,6 +64,7 @@ def main():
         all_tasks.addWidget(x,cnt+1,1)
         all_tasks.addWidget(y,cnt+1,2)
         x.clicked.connect(partial(delete_button,all_tasks,lists[0][1],tasks[cnt][1],service))
+        y.clicked.connect(partial(complete_button,all_tasks,lists[0][1],tasks[cnt][1],tasks[cnt][2],service))
 
     print(all_tasks.count())
     drop_list.currentIndexChanged.connect(partial(selectionchange,all_tasks,lists,service))

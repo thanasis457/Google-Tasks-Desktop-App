@@ -36,6 +36,11 @@ def func():
     return service
 
 def sort_func(e):
+    try:
+        e['parent']
+        position+=1000000000
+    except:
+        pass
     return int(e['position'])
 def ret_lists(service):
 
@@ -62,6 +67,10 @@ def delete(all_tasks,list_id,task_id,service):
     # service.tasks().delete(tasklist=lists[drop_list.currentIndex()][1],task=tasks[row][1]).execute()
     service.tasks().delete(tasklist=list_id,task=task_id).execute()
 
+def complete(all_tasks,list_id,task_id,task,service):
+    # print(task_id)
+    task['status']='completed'
+    service.tasks().update(tasklist=list_id,task=task_id,body=task).execute()
 
 def ret_tasks(target_list,service):
     # results = service.tasklists().list().execute()
@@ -73,10 +82,10 @@ def ret_tasks(target_list,service):
         more.sort(key=sort_func)
         final=[]
         for i in more:
-            final.append((i['title'],i['id']))
+            final.append((i['title'],i['id'],i))
         return final
     except:
-        return [('Empty list - Add something','0')]
+        return [('Empty list - Add something','0','0')]
 if __name__ == '__main__':
     ret_tasks('MDM4NDkxMDU0Mjk5OTcwMzU2NDM6MDow')
     # ret_lists()
