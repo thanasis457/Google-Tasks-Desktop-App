@@ -35,13 +35,6 @@ def func():
     service = build('tasks', 'v1', credentials=creds)
     return service
 
-def sort_func(e):
-    try:
-        e['parent']
-        position+=1000000000
-    except:
-        pass
-    return int(e['position'])
 def ret_lists(service):
 
     # Call the Tasks API
@@ -72,17 +65,39 @@ def complete(all_tasks,list_id,task_id,task,service):
     task['status']='completed'
     service.tasks().update(tasklist=list_id,task=task_id,body=task).execute()
 
+def sort_func(e):
+    # print(type(e['position']))
+    try:
+        e['parent']
+        e['position']=int(e['position'])+1000000000
+    except:
+        pass
+    return int(e['position'])
+
 def ret_tasks(target_list,service):
     # results = service.tasklists().list().execute()
     # items = results['items']
     more=service.tasks().list(tasklist=target_list,maxResults=40,showCompleted=False,showHidden=True).execute()
     # pprint(more)
+
     try:
         more=more['items']
         more.sort(key=sort_func)
-        final=[]
+        dict={}
         for i in more:
-            final.append((i['title'],i['id'],i))
+            try:
+                dict[i['parent']].append((i['title'],i['id'],i))
+            except:
+                dict[i['id']]=[(i['title'],i)]
+        # pprint(dict)
+        final=[]
+        for i,val in dict.items():
+            final.append((val[0][0],i,val[0][1]))
+            # print(val[0])
+            for j in range(1,len(val)):
+                # print(val[j])
+                final.append(('----- '+val[j][0],val[j][1],val[j][2]))
+        # print(final)
         return final
     except:
         return [('Empty list - Add something','0','0')]
