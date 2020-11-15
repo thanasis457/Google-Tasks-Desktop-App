@@ -9,6 +9,6 @@ To run (you will need python3):
 3. ```pip3 install -r requirements.txt``` (Run it with sudo if there are conflicts)
 4. ```python3 qt.py```
 
-You can also download the executables and run them directly.
-
 Let me know of any issues!
+
+Unfortunately I cannot make one-file executables due to issues with Google's Api module
