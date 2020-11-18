@@ -44,6 +44,7 @@ def delete_button(window,all_tasks,list_id,task_id,service):
         update_tasks(window,all_tasks,list_id,service)
 
 def reload_button(self,window,all_tasks,list_id,service):
+    self.clicked.disconnect()
     self.clicked.connect(partial(update_tasks,window,all_tasks,list_id,service))
 
 

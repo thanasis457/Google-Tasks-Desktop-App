@@ -39,6 +39,11 @@ def ret_lists(service):
     # Call the Tasks API
     results = service.tasklists().list().execute()
     items = results['items']
+    # tmp=items[0]
+    # items[0]=items[1]
+    # items[1]=tmp
+    # pprint(items)
+    # items.sort(key=sort_list)
     # more=service.tasks().list(tasklist=items[1]['id']).execute()
     final=[]
     for i in items:
@@ -62,7 +67,10 @@ def delete(all_tasks,list_id,task_id,service):
 def complete(all_tasks,list_id,task_id,task,service):
     # print(task_id)
     task['status']='completed'
-    service.tasks().update(tasklist=list_id,task=task_id,body=task).execute()
+    try:
+        service.tasks().update(tasklist=list_id,task=task_id,body=task).execute()
+    except:
+        pass
 
 def sort_func(e):
     # print(type(e['position']))
@@ -76,30 +84,33 @@ def sort_func(e):
 def ret_tasks(target_list,service):
     # results = service.tasklists().list().execute()
     # items = results['items']
-    more=service.tasks().list(tasklist=target_list,maxResults=40,showCompleted=False,showHidden=True).execute()
-    # pprint(more)
-
     try:
-        more=more['items']
-        more.sort(key=sort_func)
-        dict={}
-        for i in more:
-            try:
-                dict[i['parent']].append((i['title'],i['id'],i))
-            except:
-                dict[i['id']]=[(i['title'],i)]
-        # pprint(dict)
-        final=[]
-        for i,val in dict.items():
-            final.append((val[0][0],i,val[0][1]))
-            # print(val[0])
-            for j in range(1,len(val)):
-                # print(val[j])
-                final.append(('----- '+val[j][0],val[j][1],val[j][2]))
-        # print(final)
-        return final
+        more=service.tasks().list(tasklist=target_list,maxResults=40,showCompleted=False,showHidden=True).execute()
+        # pprint(more)
+
+        try:
+            more=more['items']
+            more.sort(key=sort_func)
+            dict={}
+            for i in more:
+                try:
+                    dict[i['parent']].append((i['title'],i['id'],i))
+                except:
+                    dict[i['id']]=[(i['title'],i)]
+            # pprint(dict)
+            final=[]
+            for i,val in dict.items():
+                final.append((val[0][0],i,val[0][1]))
+                # print(val[0])
+                for j in range(1,len(val)):
+                    # print(val[j])
+                    final.append(('----- '+val[j][0],val[j][1],val[j][2]))
+            # print(final)
+            return final
+        except:
+            return [('Empty list - Add something','0','0')]
     except:
-        return [('Empty list - Add something','0','0')]
+        return [('Something went wrong. Try again!','0','0')]
 if __name__ == '__main__':
     ret_tasks('MDM4NDkxMDU0Mjk5OTcwMzU2NDM6MDow')
     # ret_lists()
