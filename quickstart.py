@@ -53,7 +53,7 @@ def ret_lists(service):
     # pprint(final)
     # pprint(items)
 
-def delete(all_tasks,list_id,task_id,service):
+def delete(list_id,task_id,service):
     # print(drop_list.currentIndex())
     # print(lists[0])
     # print(tasks[:10])
@@ -64,7 +64,7 @@ def delete(all_tasks,list_id,task_id,service):
     # service.tasks().delete(tasklist=lists[drop_list.currentIndex()][1],task=tasks[row][1]).execute()
     service.tasks().delete(tasklist=list_id,task=task_id).execute()
 
-def complete(all_tasks,list_id,task_id,task,service):
+def complete(list_id,task_id,task,service):
     # print(task_id)
     task['status']='completed'
     try:

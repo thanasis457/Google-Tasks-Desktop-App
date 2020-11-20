@@ -1,1 +1,6 @@
 token.pickle
+.eggs
+qt.spec
+__pycache__
+.DS_Store
+setup.py
