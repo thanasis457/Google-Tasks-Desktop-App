@@ -37,6 +37,7 @@ class MainGrid(QGridLayout):
         self.completed.clicked.connect(self.show_completed)
         self.deleted.clicked.connect(self.show_deleted)
         self.update_tasks()
+        self.setColumnStretch(0, 1)
         # self.resizeColumnsToContents()
 
     def selectionchange(self,i):

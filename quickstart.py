@@ -105,7 +105,7 @@ def ret_tasks(target_list,service,show_completed=False,show_deleted=False):
     # results = service.tasklists().list().execute()
     # items = results['items']
     try:
-        more=service.tasks().list(tasklist=target_list,maxResults=40,showCompleted=show_completed,showDeleted=show_deleted,showHidden=False).execute()
+        more=service.tasks().list(tasklist=target_list,maxResults=80,showCompleted=show_completed,showDeleted=show_deleted,showHidden=True).execute()
         # pprint(more)
 
         try:
