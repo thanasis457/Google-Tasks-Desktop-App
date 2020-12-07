@@ -5,3 +5,5 @@ __pycache__
 .DS_Store
 setup.py
 .vscode
+old.py
+qt2.py
