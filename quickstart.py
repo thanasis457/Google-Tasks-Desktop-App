@@ -39,12 +39,9 @@ def ret_lists(service):
     # Call the Tasks API
     results = service.tasklists().list().execute()
     items = results['items']
-    # tmp=items[0]
-    # items[0]=items[1]
-    # items[1]=tmp
-    # pprint(items)
-    # items.sort(key=sort_list)
-    # more=service.tasks().list(tasklist=items[1]['id']).execute()
+    tmp=items[0]
+    items[0]=items[1]
+    items[1]=tmp
     final=[]
     for i in items:
         final.append((i['title'],i['id']))
@@ -54,24 +51,40 @@ def ret_lists(service):
     # pprint(items)
 
 def delete(list_id,task_id,service):
-    # print(drop_list.currentIndex())
-    # print(lists[0])
-    # print(tasks[:10])
-    # print(tasks[row])
-    # print(lists[drop_list.currentIndex()][1])
-    # print(tasks[row][1])
-    # return
-    # service.tasks().delete(tasklist=lists[drop_list.currentIndex()][1],task=tasks[row][1]).execute()
-    service.tasks().delete(tasklist=list_id,task=task_id).execute()
+    try:
+        service.tasks().delete(tasklist=list_id,task=task_id).execute()
+    except:
+        pass
 
 def complete(list_id,task_id,task,service):
     # print(task_id)
-    task['status']='completed'
     try:
+        task['status']='completed'
         service.tasks().update(tasklist=list_id,task=task_id,body=task).execute()
     except:
         pass
 
+def restore(list_id,task_id,task,service):
+    try:
+        if(task['deleted']==True):
+            task['deleted']=False
+        elif(task['completed']=='completed'):
+            task['completed']='needsAction'
+            del task['completed']
+    except:
+        try:
+            # print('Checking if completed')
+            if(task['status']=='completed'):
+                task['status']='needsAction'
+                del task['completed']
+                print('Changed to completed')
+        except:
+            # print("Caught")
+            pass
+    # print("Calling api")
+    pprint(task_id)
+    service.tasks().update(tasklist=list_id,task=task_id,body=task).execute()
+        
 def sort_func(e):
     # print(type(e['position']))
     try:
@@ -81,11 +94,18 @@ def sort_func(e):
         pass
     return int(e['position'])
 
-def ret_tasks(target_list,service):
+def add(list_id,task,service):
+    # print(list_id)
+    try:
+        service.tasks().insert(tasklist=list_id,body=task).execute()
+    except:
+        print("Something went wrong with adding the new task")
+
+def ret_tasks(target_list,service,show_completed=False,show_deleted=False):
     # results = service.tasklists().list().execute()
     # items = results['items']
     try:
-        more=service.tasks().list(tasklist=target_list,maxResults=40,showCompleted=False,showHidden=True).execute()
+        more=service.tasks().list(tasklist=target_list,maxResults=40,showCompleted=show_completed,showDeleted=show_deleted,showHidden=False).execute()
         # pprint(more)
 
         try:
@@ -93,6 +113,7 @@ def ret_tasks(target_list,service):
             more.sort(key=sort_func)
             dict={}
             for i in more:
+                if(show_completed and i['status']=='needsAction'): continue
                 try:
                     dict[i['parent']].append((i['title'],i['id'],i))
                 except:
@@ -106,7 +127,21 @@ def ret_tasks(target_list,service):
                     # print(val[j])
                     final.append(('----- '+val[j][0],val[j][1],val[j][2]))
             # print(final)
-            return final
+            cnt=0
+            if(not show_completed and not show_deleted): return final
+            final_edited=[]
+            for i in final:
+                if(show_completed):
+                    if(i[2]['status']=='needsAction'): continue
+                    final_edited.append(i)
+                elif(show_deleted):
+                    try:
+                        if(i[2]['deleted']=='False'): continue
+                        final_edited.append(i)
+                    except:
+                        continue
+            
+            return final_edited
         except:
             return [('Empty list - Add something','0','0')]
     except:

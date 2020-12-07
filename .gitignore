@@ -4,3 +4,4 @@ qt.spec
 __pycache__
 .DS_Store
 setup.py
+.vscode
