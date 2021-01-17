@@ -61,15 +61,16 @@ def complete(list_id,task_id,task,service):
     try:
         task['status']='completed'
         service.tasks().update(tasklist=list_id,task=task_id,body=task).execute()
-    except:
-        pass
+    except Exception as e:
+        print('Something failed')
+        pprint(e)
 
 def restore(list_id,task_id,task,service):
     try:
         if(task['deleted']==True):
             task['deleted']=False
-        elif(task['completed']=='completed'):
-            task['completed']='needsAction'
+        elif(task['status']=='completed'):
+            task['status']='needsAction'
             del task['completed']
     except:
         try:
@@ -77,7 +78,7 @@ def restore(list_id,task_id,task,service):
             if(task['status']=='completed'):
                 task['status']='needsAction'
                 del task['completed']
-                print('Changed to completed')
+                # print('Changed to completed')
         except:
             # print("Caught")
             pass
@@ -89,10 +90,9 @@ def sort_func(e):
     # print(type(e['position']))
     try:
         e['parent']
-        e['position']=int(e['position'])+1000000000
+        return int(e['position'])+1000000000
     except:
-        pass
-    return int(e['position'])
+        return int(e['position'])
 
 def add(list_id,task,service):
     # print(list_id)
@@ -128,6 +128,7 @@ def ret_tasks(target_list,service,show_completed=False,show_deleted=False):
                     final.append(('----- '+val[j][0],val[j][1],val[j][2]))
             # print(final)
             cnt=0
+            # pprint(final)
             if(not show_completed and not show_deleted): return final
             final_edited=[]
             for i in final:
@@ -140,7 +141,6 @@ def ret_tasks(target_list,service,show_completed=False,show_deleted=False):
                         final_edited.append(i)
                     except:
                         continue
-            
             return final_edited
         except:
             return [('Empty list - Add something','0','0')]
