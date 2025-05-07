@@ -18,7 +18,10 @@ def func():
     # created automatically when the authorization flow completes for the first
     # time.
     if os.path.exists('token.json'):
-        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        try:
+            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        except:
+            creds = None
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
